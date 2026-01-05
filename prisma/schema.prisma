@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Place {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  station     String
+  openTime    String?
+  travelInfo  String?
+  phone       String?
+  mapUrl      String?
+  imageUrl    String?   // ✅ กลับมาใช้รูปเดี่ยว
+  createdAt   DateTime @default(now())
+
+  events Event[]
+}
+
+model Event {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  startDate DateTime
+  endDate   DateTime
+
+  stationCode String
+
+  placeId String
+  place   Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  sourceType EventSourceType
+  sourceName String
+  sourceUrl  String
+  externalId String?
+
+  status    EventStatus @default(DRAFT)
+  createdAt DateTime    @default(now())
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  REJECTED
+}
+
+enum EventSourceType {
+  INTERNAL
+  EXTERNAL
+}

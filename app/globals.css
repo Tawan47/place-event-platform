@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Admin / Form Input Style ===== */
+.input-dark {
+  @apply w-full rounded-xl bg-white/10 border border-white/20
+         px-4 py-3 text-white
+         focus:outline-none focus:ring-2 focus:ring-green-400/60
+         focus:border-green-400 transition;
+}
+
+
+/* textarea ให้ดูเนียนขึ้น */
+textarea.input {
+  resize: none;
+}
