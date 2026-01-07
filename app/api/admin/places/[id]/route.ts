@@ -12,6 +12,7 @@ export async function GET(
         const { id } = await params;
         const place = await prisma.place.findUnique({
             where: { id },
+            include: { images: true },
         });
 
         if (!place) {
@@ -43,7 +44,9 @@ export async function PUT(
         const travelInfo = formData.get("travelInfo") as string | null;
         const phone = formData.get("phone") as string | null;
         const mapUrl = formData.get("mapUrl") as string | null;
-        const image = formData.get("image") as File | null;
+        const imagesField = formData.getAll("images") as File[];
+        const imageField = formData.getAll("image") as File[];
+        const allImages = [...imagesField, ...imageField];
 
         const data: any = {
             name,
@@ -56,24 +59,47 @@ export async function PUT(
             mapUrl,
         };
 
-        if (image && image.size > 0) {
-            const bytes = await image.arrayBuffer();
-            const buffer = Buffer.from(bytes);
+        const imageRecords: { url: string }[] = [];
 
-            const uploadDir = path.join(process.cwd(), "public/uploads");
-            await fs.mkdir(uploadDir, { recursive: true });
+        for (const image of allImages) {
+            if (!image || !(image instanceof File) || image.size === 0) continue;
 
-            const fileName = `${Date.now()}-${image.name}`;
-            const filePath = path.join(uploadDir, fileName);
+            try {
+                const bytes = await image.arrayBuffer();
+                const buffer = Buffer.from(bytes);
 
-            await fs.writeFile(filePath, buffer);
+                const uploadDir = path.join(process.cwd(), "public/uploads");
+                await fs.mkdir(uploadDir, { recursive: true });
 
-            data.imageUrl = `/uploads/${fileName}`;
+                const fileName = `${Date.now()}-${image.name}`;
+                const filePath = path.join(uploadDir, fileName);
+
+                await fs.writeFile(filePath, buffer);
+
+                imageRecords.push({
+                    url: `/uploads/${fileName}`,
+                });
+            } catch (err) {
+                console.error("Error saving image:", err);
+            }
+        }
+
+        const updateData: any = {
+            ...data,
+        };
+
+        if (imageRecords.length > 0) {
+            updateData.imageUrl = imageRecords[0].url;
+            updateData.images = {
+                deleteMany: {}, // ✅ ลบรูปเก่าออกก่อน
+                create: imageRecords,
+            };
         }
 
         const place = await prisma.place.update({
             where: { id },
-            data,
+            data: updateData,
+            include: { images: true },
         });
 
         return NextResponse.json(place);

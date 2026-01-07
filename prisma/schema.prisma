@@ -17,11 +17,22 @@ model Place {
   travelInfo  String?
   phone       String?
   mapUrl      String?
-  imageUrl    String?   // ✅ กลับมาใช้รูปเดี่ยว
+  imageUrl    String?
   createdAt   DateTime @default(now())
 
+  images PlaceImage[]
   events Event[]
 }
+
+
+model PlaceImage {
+  id        String   @id @default(cuid())
+  url       String
+  placeId  String
+  place    Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
 
 model Event {
   id          String  @id @default(cuid())
@@ -41,8 +52,19 @@ model Event {
   sourceUrl  String
   externalId String?
 
+  imageUrl    String?
+  images      EventImage[]
+
   status    EventStatus @default(DRAFT)
   createdAt DateTime    @default(now())
+}
+
+model EventImage {
+  id        String   @id @default(cuid())
+  url       String
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 enum EventStatus {

@@ -4,7 +4,7 @@ export type PlaceDTO = {
   category: string;
   description?: string | null;
   station: string;
-  imageUrl?: string | null;
+  images: { id: string; url: string }[];
   openTime?: string | null;
   travelInfo?: string | null;
   phone?: string | null;

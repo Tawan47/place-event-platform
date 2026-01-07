@@ -10,12 +10,22 @@ export async function GET(req: Request) {
   const start = new Date(year, month, 1);
   const end = new Date(year, month + 1, 0);
 
-  const events = await prisma.event.findMany({
-    where: {
-      startDate: { gte: start, lte: end },
-      ...(station ? { stationCode: station } : {}),
-    },
-  });
+  try {
 
-  return NextResponse.json(events);
+    const events = await (prisma.event as any).findMany({
+      where: {
+        startDate: { gte: start, lte: end },
+        ...(station ? { stationCode: station } : {}),
+      },
+      include: {
+        images: true,
+        place: true,
+      },
+    });
+
+    return NextResponse.json(events);
+  } catch (error: any) {
+    console.error("FETCH EVENTS ERROR:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

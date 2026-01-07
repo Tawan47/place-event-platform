@@ -33,7 +33,7 @@ export default function HomeClient({ places }: Props) {
       </aside>
 
       {/* Content */}
-      <section className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <section className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 auto-rows-[min-content]">
         {filteredPlaces.length === 0 && (
           <p className="text-white/60">ยังไม่มีสถานที่ในระบบ</p>
         )}
@@ -45,7 +45,8 @@ export default function HomeClient({ places }: Props) {
             title={place.name}
             tag={place.category}
             time={place.openTime ?? "-"}
-            image={place.imageUrl ?? undefined}
+            station={place.station}
+            image={place.images?.[0]?.url || (place as any).imageUrl}
             description={place.description ?? undefined}
             mapUrl={place.mapUrl ?? undefined}
           />

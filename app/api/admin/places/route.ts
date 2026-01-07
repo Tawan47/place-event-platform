@@ -15,9 +15,13 @@ export async function POST(req: Request) {
     const travelInfo = formData.get("travelInfo") as string | null;
     const phone = formData.get("phone") as string | null;
     const mapUrl = formData.get("mapUrl") as string | null;
-    const image = formData.get("image") as File | null;
 
-    // ✅ validate ขั้นต้น
+    // ✅ รับไฟล์ (รองรับทั้งชื่อ images และ image)
+    const imagesField = formData.getAll("images") as File[];
+    const imageField = formData.getAll("image") as File[];
+    const allImages = [...imagesField, ...imageField];
+
+    // ✅ validate
     if (!name || !category || !station) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -25,36 +29,50 @@ export async function POST(req: Request) {
       );
     }
 
-    let imageUrl: string | null = null;
+    const imageRecords: { url: string }[] = [];
 
-    // ✅ ถ้ามีไฟล์ → save
-    if (image && image.size > 0) {
-      const bytes = await image.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    // ✅ save images
+    for (const image of allImages) {
+      if (!image || !(image instanceof File) || image.size === 0) continue;
 
-      const uploadDir = path.join(process.cwd(), "public/uploads");
-      await fs.mkdir(uploadDir, { recursive: true });
+      try {
+        const bytes = await image.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-      const fileName = `${Date.now()}-${image.name}`;
-      const filePath = path.join(uploadDir, fileName);
+        const uploadDir = path.join(process.cwd(), "public/uploads");
+        await fs.mkdir(uploadDir, { recursive: true });
 
-      await fs.writeFile(filePath, buffer);
+        const fileName = `${Date.now()}-${image.name}`;
+        const filePath = path.join(uploadDir, fileName);
 
-      imageUrl = `/uploads/${fileName}`;
+        await fs.writeFile(filePath, buffer);
+
+        imageRecords.push({
+          url: `/uploads/${fileName}`,
+        });
+      } catch (err) {
+        console.error("Error saving image:", err);
+      }
     }
 
-    // ✅ create place
+    // ✅ create place + images (Hybrid approach)
     const place = await prisma.place.create({
       data: {
         name,
         category,
         description,
         station,
-        imageUrl,
         openTime,
         travelInfo,
         phone,
         mapUrl,
+        imageUrl: imageRecords.length > 0 ? imageRecords[0].url : null,
+        images: {
+          create: imageRecords,
+        },
+      },
+      include: {
+        images: true,
       },
     });
 
@@ -72,7 +90,11 @@ export async function GET() {
   try {
     const places = await prisma.place.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        images: true,
+      },
     });
+
     return NextResponse.json(places);
   } catch (error) {
     return NextResponse.json(

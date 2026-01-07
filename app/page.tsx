@@ -14,7 +14,13 @@ export default async function HomePage() {
       travelInfo: true,
       phone: true,
       mapUrl: true,
-      imageUrl: true, // ✅ ใช้แบบเดิม
+      imageUrl: true,
+      images: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
       createdAt: true,
     },
   });
