@@ -8,7 +8,9 @@ type Props = {
   }>;
 };
 
-import { MapPin, Clock, Phone, Train, Info, Navigation } from "lucide-react";
+import { MapPin, Clock, Phone, Train, Info, Navigation, Star } from "lucide-react";
+import ReviewForm from "@/components/reviews/ReviewForm";
+import ReviewList from "@/components/reviews/ReviewList";
 
 export default async function PlaceDetailPage({ params }: Props) {
   // ✅ unwrap params (สำคัญมากใน Next 15+)
@@ -22,6 +24,11 @@ export default async function PlaceDetailPage({ params }: Props) {
     where: { id },
     include: {
       images: true,
+      reviews: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 
@@ -64,7 +71,7 @@ export default async function PlaceDetailPage({ params }: Props) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Main Content (Description) */}
+          {/* Main Content (Description & Reviews) */}
           <div className="lg:col-span-2 space-y-8">
             {place.description && (
               <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-lg">
@@ -77,6 +84,18 @@ export default async function PlaceDetailPage({ params }: Props) {
                 </p>
               </div>
             )}
+
+            {/* Reviews Section */}
+            <div>
+              <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
+                <Star className="w-6 h-6 text-yellow-400" />
+                รีวิวจากผู้ใช้
+              </h2>
+              <div className="grid gap-8">
+                <ReviewForm placeId={place.id} />
+                <ReviewList reviews={place.reviews} />
+              </div>
+            </div>
           </div>
 
           {/* Sidebar (Info Card) */}

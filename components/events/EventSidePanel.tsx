@@ -44,7 +44,6 @@ export default function EventSidePanel({
             onClick={onClose}
             className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 text-white/60 hover:text-white transition-all"
           >
-            ✕
           </button>
         </div>
 

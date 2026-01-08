@@ -80,7 +80,7 @@ export default function PlaceCard({
 
       {/* Content */}
       <div className="absolute bottom-0 w-full p-5 z-10 flex flex-col gap-1">
-        <h3 className="text-white font-bold text-2xl leading-tight line-clamp-2 drop-shadow-md">
+        <h3 className="text-white font-extrabold text-3xl uppercase tracking-wide leading-tight line-clamp-2 drop-shadow-md group-hover:text-green-400 transition-colors duration-300">
           {title}
         </h3>
 

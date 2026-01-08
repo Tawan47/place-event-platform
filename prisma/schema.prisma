@@ -22,6 +22,18 @@ model Place {
 
   images PlaceImage[]
   events Event[]
+  reviews Review[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  author    String?
+  createdAt DateTime @default(now())
+
+  placeId String
+  place   Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
 
 
