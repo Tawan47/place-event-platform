@@ -18,6 +18,12 @@ model Place {
   phone       String?
   mapUrl      String?
   imageUrl    String?
+
+  facebook    String?
+  line        String?
+  instagram   String?
+  website     String?
+
   createdAt   DateTime @default(now())
 
   images PlaceImage[]

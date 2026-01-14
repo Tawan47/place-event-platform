@@ -44,6 +44,10 @@ export async function PUT(
         const travelInfo = formData.get("travelInfo") as string | null;
         const phone = formData.get("phone") as string | null;
         const mapUrl = formData.get("mapUrl") as string | null;
+        const facebook = formData.get("facebook") as string | null;
+        const line = formData.get("line") as string | null;
+        const instagram = formData.get("instagram") as string | null;
+        const website = formData.get("website") as string | null;
         const imagesField = formData.getAll("images") as File[];
         const imageField = formData.getAll("image") as File[];
         const allImages = [...imagesField, ...imageField];
@@ -57,6 +61,10 @@ export async function PUT(
             travelInfo,
             phone,
             mapUrl,
+            facebook,
+            line,
+            instagram,
+            website,
         };
 
         const imageRecords: { url: string }[] = [];

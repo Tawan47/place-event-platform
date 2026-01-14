@@ -1,4 +1,4 @@
-"use client";
+import { TrainFront } from "lucide-react";
 
 type Props = {
   name: string;
@@ -15,7 +15,7 @@ export default function StationNode({
   active,
   onClick,
 }: Props) {
-  const size = active ? 32 : 24; // 🔥 วงกลมใหญ่ขึ้น
+  const size = active ? 36 : 24; // 🔥 Active ใหญ่ขึ้น + เป็นรูปรถไฟ
   const dotOffset = 34;          // ต้องตรงกับ BTSMap
 
   return (
@@ -29,11 +29,10 @@ export default function StationNode({
         className={`
           relative z-10 flex items-center justify-center
           rounded-full font-bold
-          transition-all duration-300
-          ${
-            active
-              ? "bg-green-500 text-black scale-110"
-              : "bg-white text-black"
+          transition-all duration-300 shadow-md
+          ${active
+            ? "bg-green-500 text-black scale-110 ring-4 ring-green-500/30"
+            : "bg-white text-black hover:scale-110"
           }
         `}
         style={{
@@ -42,9 +41,11 @@ export default function StationNode({
           marginLeft: dotOffset,
         }}
       >
-        <span className="text-[10px] leading-none">
-          {code}
-        </span>
+        {active ? (
+          <TrainFront size={20} strokeWidth={2.5} />
+        ) : (
+          <span className="text-[10px] leading-none">{code}</span>
+        )}
       </div>
 
       {/* TEXT (ชื่อสถานี) */}

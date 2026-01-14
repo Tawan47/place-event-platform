@@ -24,6 +24,10 @@ function AdminPlacesForm() {
     travelInfo: "",
     phone: "",
     mapUrl: "",
+    facebook: "",
+    line: "",
+    instagram: "",
+    website: "",
   });
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -51,6 +55,10 @@ function AdminPlacesForm() {
         travelInfo: data.travelInfo || "",
         phone: data.phone || "",
         mapUrl: data.mapUrl || "",
+        facebook: data.facebook || "",
+        line: data.line || "",
+        instagram: data.instagram || "",
+        website: data.website || "",
       });
     } catch (err) {
       console.error(err);
@@ -78,6 +86,10 @@ function AdminPlacesForm() {
       formData.append("travelInfo", form.travelInfo);
       formData.append("phone", form.phone);
       formData.append("mapUrl", form.mapUrl);
+      formData.append("facebook", form.facebook);
+      formData.append("line", form.line);
+      formData.append("instagram", form.instagram);
+      formData.append("website", form.website);
 
       imageFiles.forEach((file) => {
         formData.append("images", file);
@@ -110,6 +122,10 @@ function AdminPlacesForm() {
           travelInfo: "",
           phone: "",
           mapUrl: "",
+          facebook: "",
+          line: "",
+          instagram: "",
+          website: "",
         });
         setImageFiles([]);
       }
@@ -256,6 +272,42 @@ function AdminPlacesForm() {
             className={inputClass}
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-white/70 mb-1">Facebook</label>
+          <input
+            className={inputClass}
+            value={form.facebook}
+            onChange={(e) => setForm({ ...form, facebook: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-white/70 mb-1">Line</label>
+          <input
+            className={inputClass}
+            value={form.line}
+            onChange={(e) => setForm({ ...form, line: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-white/70 mb-1">Instagram</label>
+          <input
+            className={inputClass}
+            value={form.instagram}
+            onChange={(e) => setForm({ ...form, instagram: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-white/70 mb-1">Website</label>
+          <input
+            className={inputClass}
+            value={form.website}
+            onChange={(e) => setForm({ ...form, website: e.target.value })}
           />
         </div>
 

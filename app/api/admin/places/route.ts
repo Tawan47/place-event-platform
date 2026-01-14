@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import path from "path";
 import fs from "fs/promises";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
@@ -15,6 +16,11 @@ export async function POST(req: Request) {
     const travelInfo = formData.get("travelInfo") as string | null;
     const phone = formData.get("phone") as string | null;
     const mapUrl = formData.get("mapUrl") as string | null;
+
+    const facebook = formData.get("facebook") as string | null;
+    const line = formData.get("line") as string | null;
+    const instagram = formData.get("instagram") as string | null;
+    const website = formData.get("website") as string | null;
 
     // ✅ รับไฟล์ (รองรับทั้งชื่อ images และ image)
     const imagesField = formData.getAll("images") as File[];
@@ -66,6 +72,10 @@ export async function POST(req: Request) {
         travelInfo,
         phone,
         mapUrl,
+        facebook,
+        line,
+        instagram,
+        website,
         imageUrl: imageRecords.length > 0 ? imageRecords[0].url : null,
         images: {
           create: imageRecords,
@@ -75,6 +85,9 @@ export async function POST(req: Request) {
         images: true,
       },
     });
+
+    revalidatePath("/");
+    revalidatePath("/admin/places");
 
     return NextResponse.json(place, { status: 201 });
   } catch (error) {
