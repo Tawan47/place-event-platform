@@ -43,10 +43,6 @@ export default function RootLayout({
             <a href="/admin" className="hover:text-accent">
               ADMIN
             </a>
-            <input
-              placeholder="Search..."
-              className="bg-panel/60 px-3 py-1 rounded-md text-sm outline-none"
-            />
           </nav>
         </header>
 

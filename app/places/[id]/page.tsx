@@ -175,63 +175,66 @@ export default async function PlaceDetailPage({ params }: Props) {
                 )}
               </div>
 
-              <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
-                {place.facebook && (
-                  <a
-                    href={place.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] transition group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[#1877F2]/20 flex items-center justify-center group-hover:scale-110 transition">
-                      <Facebook className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium">Facebook</span>
-                  </a>
-                )}
+              {(place.facebook || place.line || place.instagram || place.website) && (
+                <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
+                  <h4 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4">ช่องทางติดต่อ</h4>
+                  {place.facebook && (
+                    <a
+                      href={place.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] transition group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#1877F2]/20 flex items-center justify-center group-hover:scale-110 transition">
+                        <Facebook className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Facebook</span>
+                    </a>
+                  )}
 
-                {place.line && (
-                  <a
-                    href={place.line.startsWith("http") ? place.line : `https://line.me/R/ti/p/${place.line}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] transition group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[#06C755]/20 flex items-center justify-center group-hover:scale-110 transition">
-                      <MessageCircle className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium">Line</span>
-                  </a>
-                )}
+                  {place.line && (
+                    <a
+                      href={place.line.startsWith("http") ? place.line : `https://line.me/R/ti/p/${place.line}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] transition group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#06C755]/20 flex items-center justify-center group-hover:scale-110 transition">
+                        <MessageCircle className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Line</span>
+                    </a>
+                  )}
 
-                {place.instagram && (
-                  <a
-                    href={place.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-[#E4405F]/10 hover:bg-[#E4405F]/20 text-[#E4405F] transition group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[#E4405F]/20 flex items-center justify-center group-hover:scale-110 transition">
-                      <Instagram className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium">Instagram</span>
-                  </a>
-                )}
+                  {place.instagram && (
+                    <a
+                      href={place.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-[#E4405F]/10 hover:bg-[#E4405F]/20 text-[#E4405F] transition group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#E4405F]/20 flex items-center justify-center group-hover:scale-110 transition">
+                        <Instagram className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Instagram</span>
+                    </a>
+                  )}
 
-                {place.website && (
-                  <a
-                    href={place.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white transition group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition">
-                      <Globe className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium">Website</span>
-                  </a>
-                )}
-              </div>
+                  {place.website && (
+                    <a
+                      href={place.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white transition group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Website</span>
+                    </a>
+                  )}
+                </div>
+              )}
 
               {place.mapUrl && (
                 <a
