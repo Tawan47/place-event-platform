@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import path from "path";
-import fs from "fs/promises";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 export async function GET(
     req: Request,
@@ -69,26 +68,17 @@ export async function PUT(
 
         const imageRecords: { url: string }[] = [];
 
+        // ✅ อัปโหลดรูปภาพไปยัง Cloudinary
         for (const image of allImages) {
             if (!image || !(image instanceof File) || image.size === 0) continue;
 
             try {
-                const bytes = await image.arrayBuffer();
-                const buffer = Buffer.from(bytes);
-
-                const uploadDir = path.join(process.cwd(), "public/uploads");
-                await fs.mkdir(uploadDir, { recursive: true });
-
-                const fileName = `${Date.now()}-${image.name}`;
-                const filePath = path.join(uploadDir, fileName);
-
-                await fs.writeFile(filePath, buffer);
-
-                imageRecords.push({
-                    url: `/uploads/${fileName}`,
-                });
+                const imageUrl = await uploadImageToCloudinary(image, 'places');
+                if (imageUrl) {
+                    imageRecords.push({ url: imageUrl });
+                }
             } catch (err) {
-                console.error("Error saving image:", err);
+                console.error("Error uploading image to Cloudinary:", err);
             }
         }
 

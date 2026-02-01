@@ -56,12 +56,13 @@ export default function Page() {
     <AdminLayout>
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0b1220] to-[#020617] text-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/" className="text-white/60 hover:text-white transition">
+          <div className="relative flex items-center mb-8">
+            <Link href="/" className="text-white/60 hover:text-white transition z-10">
               ← กลับหน้าหลัก
             </Link>
-            <h1 className="text-xl font-bold text-green-400">Admin Dashboard</h1>
-            <div />
+            <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-green-400">
+              Admin Dashboard
+            </h1>
           </div>
 
           <div className="mb-8">

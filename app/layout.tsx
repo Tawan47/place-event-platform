@@ -1,3 +1,6 @@
+import { AuthProvider } from "@/contexts/AuthContext";
+import Navbar from "@/components/Navbar";
+
 export default function RootLayout({
   children,
 }: {
@@ -31,23 +34,12 @@ export default function RootLayout({
       </head>
 
       <body className="dark bg-bg text-white">
-        <header className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <div className="flex items-center gap-2 text-accent font-bold">
-            ▲ BKK Explorer
-          </div>
-
-          <nav className="flex items-center gap-6">
-            <a href="/events" className="hover:text-accent">
-              EVENTS
-            </a>
-            <a href="/admin" className="hover:text-accent">
-              ADMIN
-            </a>
-          </nav>
-        </header>
-
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

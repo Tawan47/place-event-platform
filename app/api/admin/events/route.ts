@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { EventSourceType, EventStatus } from "@prisma/client";
-import path from "path";
-import fs from "fs/promises";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -38,25 +37,17 @@ export async function POST(req: Request) {
 
     const imageRecords: { url: string }[] = [];
 
-    // ✅ บันทึกรูปภาพลงดิสก์
+    // ✅ อัปโหลดรูปภาพไปยัง Cloudinary
     for (const image of allImages) {
       if (!image || !(image instanceof File) || image.size === 0) continue;
 
       try {
-        const bytes = await image.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        const uploadDir = path.join(process.cwd(), "public/uploads");
-        await fs.mkdir(uploadDir, { recursive: true });
-
-        const fileName = `${Date.now()}-${image.name}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        await fs.writeFile(filePath, buffer);
-
-        imageRecords.push({ url: `/uploads/${fileName}` });
+        const imageUrl = await uploadImageToCloudinary(image, 'events');
+        if (imageUrl) {
+          imageRecords.push({ url: imageUrl });
+        }
       } catch (err) {
-        console.error("Error saving event image:", err);
+        console.error("Error uploading event image to Cloudinary:", err);
       }
     }
 

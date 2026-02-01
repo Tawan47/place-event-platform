@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -10,52 +11,13 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const { isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
-        checkAuth();
-    }, []);
-
-    async function checkAuth() {
-        try {
-            const token = localStorage.getItem("admin_token");
-
-            if (!token) {
-                router.push("/admin/login");
-                return;
-            }
-
-            const res = await fetch("/api/auth/check", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (res.ok) {
-                setIsAuthenticated(true);
-            } else {
-                localStorage.removeItem("admin_token");
-                router.push("/admin/login");
-            }
-        } catch (error) {
-            console.error("Auth check failed:", error);
-            router.push("/admin/login");
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    async function handleLogout() {
-        try {
-            await fetch("/api/auth/logout", { method: "POST" });
-        } catch (error) {
-            console.error("Logout error:", error);
-        } finally {
-            localStorage.removeItem("admin_token");
+        if (!isLoading && !isAuthenticated) {
             router.push("/admin/login");
         }
-    }
+    }, [isLoading, isAuthenticated, router]);
 
     if (isLoading) {
         return (
@@ -74,15 +36,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     return (
         <div className="relative">
-            {/* Logout Button */}
-            <button
-                onClick={handleLogout}
-                className="fixed top-20 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition"
-            >
-                <LogOut className="w-4 h-4" />
-                <span className="text-sm font-medium">ออกจากระบบ</span>
-            </button>
-
             {children}
         </div>
     );

@@ -4,9 +4,16 @@ export async function POST(request: Request) {
     try {
         const { username, password } = await request.json();
 
-        // ค่า default ถ้าไม่มี env
-        const adminUsername = process.env.ADMIN_USERNAME || "admin";
-        const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+        // ต้องตั้งค่าใน .env เท่านั้น เพื่อความปลอดภัย
+        const adminUsername = process.env.ADMIN_USERNAME;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+
+        if (!adminUsername || !adminPassword) {
+            return NextResponse.json(
+                { success: false, message: "Server misconfiguration" },
+                { status: 500 }
+            );
+        }
 
         if (username === adminUsername && password === adminPassword) {
             // สร้าง simple token (ในโปรดักชันควรใช้ JWT)

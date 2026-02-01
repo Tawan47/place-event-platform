@@ -5,6 +5,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 const inputClass =
   "w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white " +
@@ -32,6 +33,7 @@ function AdminPlacesForm() {
   });
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
 
@@ -40,6 +42,16 @@ function AdminPlacesForm() {
       fetchPlace(editId);
     }
   }, [editId]);
+
+  useEffect(() => {
+    const urls = imageFiles.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [imageFiles]);
+
+  const removeImage = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   async function fetchPlace(id: string) {
     try {
@@ -232,18 +244,30 @@ function AdminPlacesForm() {
             accept="image/*"
             multiple
             className={inputClass}
-            onChange={(e) => setImageFiles(Array.from(e.target.files ?? []))}
+            onChange={(e) => {
+              if (e.target.files?.length) {
+                setImageFiles(Array.from(e.target.files));
+              }
+            }}
           />
 
-          {imageFiles.length > 0 && (
+          {previewUrls.length > 0 && (
             <div className="mt-3 grid grid-cols-3 gap-3">
-              {imageFiles.map((file, i) => (
-                <img
-                  key={i}
-                  src={URL.createObjectURL(file)}
-                  alt={`preview-${i}`}
-                  className="h-24 w-full object-cover rounded-lg border border-white/20"
-                />
+              {previewUrls.map((url, i) => (
+                <div key={i} className="relative group">
+                  <img
+                    src={url}
+                    alt={`preview-${i}`}
+                    className="h-24 w-full object-cover rounded-lg border border-white/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
               ))}
             </div>
           )}
@@ -350,12 +374,13 @@ export default function AdminPlacesPage() {
     <AdminLayout>
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0b1220] to-[#020617] text-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/" className="text-white/60 hover:text-white transition">
+          <div className="relative flex items-center mb-8">
+            <Link href="/" className="text-white/60 hover:text-white transition z-10">
               ← กลับหน้าหลัก
             </Link>
-            <h1 className="text-xl font-bold text-green-400">Admin Dashboard</h1>
-            <div />
+            <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-green-400">
+              Admin Dashboard
+            </h1>
           </div>
 
           <div className="mb-8">

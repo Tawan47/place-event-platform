@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 const inputClass =
   "w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white " +
@@ -35,6 +36,7 @@ export default function AdminEventsPage() {
   const [editId, setEditId] = useState<string | null>(null);
 
   const [files, setFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -67,6 +69,16 @@ export default function AdminEventsPage() {
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [files]);
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const onPlaceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
@@ -187,12 +199,13 @@ export default function AdminEventsPage() {
     <AdminLayout>
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0b1220] to-[#020617] text-white">
         <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/" className="text-white/60 hover:text-white transition">
+          <div className="relative flex items-center mb-8">
+            <Link href="/" className="text-white/60 hover:text-white transition z-10">
               ← กลับหน้าหลัก
             </Link>
-            <h1 className="text-xl font-bold text-green-400">Admin Dashboard</h1>
-            <div />
+            <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-green-400">
+              Admin Dashboard
+            </h1>
           </div>
 
           <div className="mb-8">
@@ -283,8 +296,26 @@ export default function AdminEventsPage() {
                   onChange={onFileChange}
                   accept="image/*"
                 />
-                {files.length > 0 && (
-                  <p className="text-xs text-green-400 mt-1">เลือกแล้ว {files.length} ไฟล์</p>
+
+                {previewUrls.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-3">
+                    {previewUrls.map((url, i) => (
+                      <div key={i} className="relative group">
+                        <img
+                          src={url}
+                          alt={`preview-${i}`}
+                          className="h-24 w-full object-cover rounded-lg border border-white/20"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

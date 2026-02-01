@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, User, AlertCircle, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -11,24 +12,17 @@ export default function AdminLoginPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const { login } = useAuth();
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setError("");
         setLoading(true);
 
         try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username, password }),
-            });
+            const success = await login(username, password);
 
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                localStorage.setItem("admin_token", data.token);
+            if (success) {
                 router.push("/admin");
             } else {
                 setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
