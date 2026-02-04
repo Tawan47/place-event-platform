@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { uploadImageToCloudinary, deleteImageFromCloudinary } from "@/lib/cloudinary";
 
 export async function GET(
     req: Request,
@@ -87,6 +87,26 @@ export async function PUT(
         };
 
         if (imageRecords.length > 0) {
+            // ดึงข้อมูลรูปภาพเก่ามาลบออกจาก Cloudinary
+            const oldPlace = await prisma.place.findUnique({
+                where: { id },
+                include: { images: true }
+            });
+
+            if (oldPlace) {
+                // ลบรูปใน Gallery
+                for (const img of oldPlace.images) {
+                    if (img.url) await deleteImageFromCloudinary(img.url);
+                }
+                // ลบรูปปก (ถ้าไม่อยู่ใน Gallery)
+                if (oldPlace.imageUrl) {
+                    const isCoverInGallery = oldPlace.images.some(img => img.url === oldPlace.imageUrl);
+                    if (!isCoverInGallery) {
+                        await deleteImageFromCloudinary(oldPlace.imageUrl);
+                    }
+                }
+            }
+
             updateData.imageUrl = imageRecords[0].url;
             updateData.images = {
                 deleteMany: {}, // ✅ ลบรูปเก่าออกก่อน
@@ -116,6 +136,25 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
+
+        // ดึงข้อมูลรูปภาพเก่ามาลบออกจาก Cloudinary ก่อนลบข้อมูลใน DB
+        const place = await prisma.place.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (place) {
+            for (const img of place.images) {
+                if (img.url) await deleteImageFromCloudinary(img.url);
+            }
+            if (place.imageUrl) {
+                const isCoverInGallery = place.images.some(img => img.url === place.imageUrl);
+                if (!isCoverInGallery) {
+                    await deleteImageFromCloudinary(place.imageUrl);
+                }
+            }
+        }
+
         await prisma.place.delete({
             where: { id },
         });

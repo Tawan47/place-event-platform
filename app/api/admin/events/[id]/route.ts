@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { EventStatus, EventSourceType } from "@prisma/client";
-import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { uploadImageToCloudinary, deleteImageFromCloudinary } from "@/lib/cloudinary";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -78,6 +78,26 @@ export async function PUT(
 
         // ถ้ามีการอัปโหลดรูปใหม่ ให้ลบรูปเดิมและใส่รูปใหม่
         if (imageRecords.length > 0) {
+            // ดึงข้อมูลรูปภาพเก่ามาลบออกจาก Cloudinary
+            const oldEvent = await prisma.event.findUnique({
+                where: { id },
+                include: { images: true }
+            });
+
+            if (oldEvent) {
+                // ลบรูปใน Gallery
+                for (const img of oldEvent.images) {
+                    if (img.url) await deleteImageFromCloudinary(img.url);
+                }
+                // ลบรูปปก (ถ้าไม่อยู่ใน Gallery)
+                if (oldEvent.imageUrl) {
+                    const isCoverInGallery = oldEvent.images.some(img => img.url === oldEvent.imageUrl);
+                    if (!isCoverInGallery) {
+                        await deleteImageFromCloudinary(oldEvent.imageUrl);
+                    }
+                }
+            }
+
             updateData.imageUrl = imageRecords[0].url;
             updateData.images = {
                 deleteMany: {},
@@ -109,6 +129,25 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
+
+        // ดึงข้อมูลรูปภาพเก่ามาลบออกจาก Cloudinary ก่อนลบข้อมูลใน DB
+        const event = await prisma.event.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (event) {
+            for (const img of event.images) {
+                if (img.url) await deleteImageFromCloudinary(img.url);
+            }
+            if (event.imageUrl) {
+                const isCoverInGallery = event.images.some(img => img.url === event.imageUrl);
+                if (!isCoverInGallery) {
+                    await deleteImageFromCloudinary(event.imageUrl);
+                }
+            }
+        }
+
         await prisma.event.delete({
             where: { id },
         });
