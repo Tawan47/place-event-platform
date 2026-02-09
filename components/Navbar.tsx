@@ -20,7 +20,7 @@ export default function Navbar() {
     return (
         <header className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0B1220]">
             <Link href="/" className="flex items-center gap-2 text-[#34d399] font-bold">
-                ▲ skytrainspace
+                ▲ SKY TRAIN SPACE
             </Link>
 
             <nav className="flex items-center gap-6">

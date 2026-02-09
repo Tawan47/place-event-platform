@@ -38,7 +38,7 @@ export default function HomeClient({ places }: Props) {
           // Welcome Section (Default View)
           <div className="flex flex-col items-center justify-center h-full min-h-[500px] text-center p-8">
             <h1 className="text-6xl md:text-8xl font-black text-[#00E07D] tracking-tighter mb-8 drop-shadow-2xl">
-              skytrainspace
+              SKY TRAIN SPACE
             </h1>
             <p className="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto font-light tracking-wide mb-12">
               รวมคาเฟ่และสถานที่ยอดฮิต ติดรถไฟฟ้า BTS เดินทางง่าย ถ่ายรูปสวย
